@@ -190,11 +190,22 @@ def _step_results():
         st.warning("No results found.")
         return
 
-    latest  = assessments[0]
-    verdict = latest["verdict"]
-    vc      = VERDICT_CONFIG.get(verdict, VERDICT_CONFIG["Conditional"])
-    overall = latest["overall_score"]
-    result  = st.session_state.get("m2_ai_result", {})
+    latest           = assessments[0]
+    verdict          = latest["verdict"]
+    vc               = VERDICT_CONFIG.get(verdict, VERDICT_CONFIG["Conditional"])
+    overall          = latest["overall_score"]
+    result           = st.session_state.get("m2_ai_result", {}) or {}
+    hard_gate        = latest.get("hard_gate_triggered", 0)
+    hard_gate_reason = latest.get("hard_gate_reason", "") or ""
+    dim_map = {
+        "ai_suitability":     latest["ai_suitability_score"],
+        "economic_viability": latest["economic_viability_score"],
+        "data_readiness":     latest["data_readiness_score"],
+        "workflow_maturity":  latest["workflow_maturity_score"],
+        "change_management":  latest["change_management_score"],
+        "risk_compliance":    latest.get("risk_compliance_score", 0),
+    }
+    dim_reasoning = result.get("dimension_reasoning", {})
 
     st.markdown(f"""
     <div class="step-hdr">
@@ -225,19 +236,6 @@ def _step_results():
                     padding:1rem 1.3rem;margin-bottom:1.2rem;font-size:0.9rem;color:#444;line-height:1.6;">
           {result['overall_summary']}
         </div>""", unsafe_allow_html=True)
-
-    # Dimension scores
-    dim_map = {
-        "ai_suitability":     latest["ai_suitability_score"],
-        "economic_viability": latest["economic_viability_score"],
-        "data_readiness":     latest["data_readiness_score"],
-        "workflow_maturity":  latest["workflow_maturity_score"],
-        "change_management":  latest["change_management_score"],
-        "risk_compliance":    latest.get("risk_compliance_score", 0),
-    }
-    hard_gate = latest.get("hard_gate_triggered", 0)
-    hard_gate_reason = latest.get("hard_gate_reason", "")
-    dim_reasoning = result.get("dimension_reasoning", {})
 
     for dim in ASSESSMENT_DIMENSIONS:
         s   = dim_map.get(dim["id"], 0)
