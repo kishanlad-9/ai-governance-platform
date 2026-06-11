@@ -19,8 +19,19 @@ def render_sidebar():
                                placeholder="Gemini API key…", label_visibility="collapsed")
         if key_in:
             st.session_state["api_key_input"] = key_in
-            st.markdown('<div style="font-size:0.7rem;color:#1D9E75;margin-top:-4px;padding-left:4px;">● Connected</div>',
-                        unsafe_allow_html=True)
+            from utils.helpers import detect_provider, resolve_model
+            provider = detect_provider(key_in)
+            icons = {"gemini": "♊", "openai": "⬡", "anthropic": "✦", "unknown": "?"}
+            icon  = icons.get(provider, "?")
+            if provider != "unknown":
+                _, model = resolve_model(key_in)
+                st.markdown(
+                    f'<div style="font-size:0.7rem;color:#1D9E75;margin-top:-4px;padding-left:4px;">' +
+                    f'● {icon} {provider.title()} · {model}</div>',
+                    unsafe_allow_html=True)
+            else:
+                st.markdown('<div style="font-size:0.7rem;color:#E24B4A;margin-top:-4px;padding-left:4px;">⚠ Unrecognised key format</div>',
+                            unsafe_allow_html=True)
         else:
             st.markdown('<div style="font-size:0.7rem;color:#E24B4A;margin-top:-4px;padding-left:4px;">● API key required</div>',
                         unsafe_allow_html=True)
