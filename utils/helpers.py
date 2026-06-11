@@ -142,8 +142,13 @@ PROBLEM STATEMENT TO ASSESS:
 - Timeline: {problem.get('timeline', '')}
 - Action owner: {problem.get('action_owner', '')}
 - Quantified business value: {problem.get('business_value', '')}
+- ISO 42001 Risk Category: {problem.get('iso_risk_category', 'Not specified')}
+- Affected stakeholders: {problem.get('affected_stakeholders', '')}
+- Human override mechanism: {problem.get('human_override', '')}
+- Data sources & PII: {problem.get('data_sources', '')}
+- Success criteria: {problem.get('success_criteria', '')}
 
-Analyse the above and return ONLY the JSON object as specified."""
+Apply hard gate rules and ISO risk penalty as defined. Return ONLY the JSON object."""
 
     try:
         resp = model.generate_content(prompt)

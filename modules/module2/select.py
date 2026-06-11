@@ -165,6 +165,9 @@ def _save_and_advance():
         "data_readiness_score":     scores.get("data_readiness", 0),
         "workflow_maturity_score":  scores.get("workflow_maturity", 0),
         "change_management_score":  scores.get("change_management", 0),
+        "risk_compliance_score":    scores.get("risk_compliance", 0),
+        "hard_gate_triggered":      1 if result.get("hard_gate_triggered") else 0,
+        "hard_gate_reason":         result.get("hard_gate_reason", ""),
         "overall_score":            overall,
         "verdict":                  verdict,
         "ai_recommendation":        ai_report,
@@ -211,6 +214,10 @@ def _step_results():
       <div style="font-size:1rem;font-weight:700;color:{vc['color']};">{vc['icon']} {verdict}</div>
     </div>""", unsafe_allow_html=True)
 
+    # Hard gate warning
+    if hard_gate:
+        st.error(f"🚫 Hard Gate Triggered: {hard_gate_reason}")
+
     # Overall summary
     if result.get("overall_summary"):
         st.markdown(f"""
@@ -226,7 +233,10 @@ def _step_results():
         "data_readiness":     latest["data_readiness_score"],
         "workflow_maturity":  latest["workflow_maturity_score"],
         "change_management":  latest["change_management_score"],
+        "risk_compliance":    latest.get("risk_compliance_score", 0),
     }
+    hard_gate = latest.get("hard_gate_triggered", 0)
+    hard_gate_reason = latest.get("hard_gate_reason", "")
     dim_reasoning = result.get("dimension_reasoning", {})
 
     for dim in ASSESSMENT_DIMENSIONS:
@@ -255,9 +265,14 @@ def _step_results():
 
     # Export
     df = pd.DataFrame([{
-        "Assessment ID": latest["id"], "Problem ID": pid,
-        "Assessed at": latest["assessed_at"], "Assessed by": latest["assessor_name"],
-        "Overall Score": overall, "Verdict": verdict,
+        "Assessment ID":    latest["id"],
+        "Problem ID":       pid,
+        "Assessed at":      latest["assessed_at"],
+        "Assessed by":      latest["assessor_name"],
+        "Overall Score":    overall,
+        "Verdict":          verdict,
+        "Hard Gate":        "Yes" if hard_gate else "No",
+        "Hard Gate Reason": hard_gate_reason,
         **{d["label"]: dim_map.get(d["id"]) for d in ASSESSMENT_DIMENSIONS},
     }])
     st.markdown("<div style='height:0.5rem'></div>", unsafe_allow_html=True)
