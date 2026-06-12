@@ -74,6 +74,7 @@ def init_db():
         if col not in existing2:
             conn.execute(f"ALTER TABLE feasibility_assessments ADD COLUMN {col} {typ}")
 
+    init_m3_table(conn)
     conn.commit()
     conn.close()
 
@@ -161,6 +162,67 @@ def db_load_assessments(problem_id: str = None) -> list:
     else:
         rows = conn.execute(
             "SELECT * FROM feasibility_assessments ORDER BY assessed_at DESC"
+        ).fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
+
+
+# ── Module 3 — Gain Pain Analysis ─────────────────────────────────────────────
+
+def init_m3_table(conn):
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS gainpain_analyses (
+            id                     TEXT PRIMARY KEY,
+            problem_id             TEXT,
+            assessment_id          TEXT,
+            analysed_at            TEXT,
+            business_value_gain    REAL,
+            strategic_alignment    REAL,
+            efficiency_gain        REAL,
+            innovation_potential   REAL,
+            implementation_cost    REAL,
+            operational_risk       REAL,
+            adoption_resistance    REAL,
+            compliance_burden      REAL,
+            avg_gains              REAL,
+            avg_pains              REAL,
+            priority_score         REAL,
+            priority_score_scaled  REAL,
+            priority_band          TEXT,
+            ai_analysis            TEXT,
+            FOREIGN KEY (problem_id) REFERENCES problem_statements(id)
+        )
+    """)
+
+
+def db_save_gainpain(rec: dict):
+    conn = get_conn()
+    conn.execute("""
+        INSERT OR REPLACE INTO gainpain_analyses
+        (id, problem_id, assessment_id, analysed_at,
+         business_value_gain, strategic_alignment, efficiency_gain, innovation_potential,
+         implementation_cost, operational_risk, adoption_resistance, compliance_burden,
+         avg_gains, avg_pains, priority_score, priority_score_scaled, priority_band, ai_analysis)
+        VALUES
+        (:id, :problem_id, :assessment_id, :analysed_at,
+         :business_value_gain, :strategic_alignment, :efficiency_gain, :innovation_potential,
+         :implementation_cost, :operational_risk, :adoption_resistance, :compliance_burden,
+         :avg_gains, :avg_pains, :priority_score, :priority_score_scaled, :priority_band, :ai_analysis)
+    """, rec)
+    conn.commit()
+    conn.close()
+
+
+def db_load_gainpain(problem_id: str = None) -> list:
+    conn = get_conn()
+    if problem_id:
+        rows = conn.execute(
+            "SELECT * FROM gainpain_analyses WHERE problem_id=? ORDER BY analysed_at DESC",
+            (problem_id,)
+        ).fetchall()
+    else:
+        rows = conn.execute(
+            "SELECT * FROM gainpain_analyses ORDER BY analysed_at DESC"
         ).fetchall()
     conn.close()
     return [dict(r) for r in rows]

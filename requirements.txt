@@ -1,9 +1,6 @@
 streamlit>=1.35.0
 pandas>=2.0.0
-
-# LLM providers — at least one required
 google-generativeai>=0.7.0
-
-# Optional — install if using OpenAI or Anthropic
-# openai>=1.30.0
-# anthropic>=0.25.0
+groq>=0.9.0
+openai>=1.30.0
+anthropic>=0.25.0

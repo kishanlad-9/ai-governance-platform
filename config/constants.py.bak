@@ -1,0 +1,45 @@
+# config/constants.py
+# ─────────────────────────────────────────────────────────────────────────────
+# Shared constants used across all modules.
+# Add new fields or status options here — no other file needs to change.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Module 1 — Problem Definition fields ─────────────────────────────────────
+REQUIRED_FIELDS = [
+    ("problem_statement",  "Business problem statement"),
+    ("business_objective", "Business objective"),
+    ("solution_approach",  "Proposed solution approach"),
+    ("timeline",           "Timeline / deadline"),
+    ("action_owner",       "Action owner / sponsor"),
+    ("workflow_location",  "Workflow / process location"),
+    ("decision_support",   "Decision support required"),
+    ("business_value",     "Quantified business value"),
+]
+
+FIELD_KEYS   = [f[0] for f in REQUIRED_FIELDS]
+FIELD_LABELS = {f[0]: f[1] for f in REQUIRED_FIELDS}
+
+# ── Submission status options ─────────────────────────────────────────────────
+STATUS_OPTIONS = ["Submitted", "Under Review", "Approved", "Rejected", "Deferred"]
+
+STATUS_BADGE = {
+    "Submitted":   "b-submitted",
+    "Under Review": "b-review",
+    "Approved":    "b-approved",
+    "Rejected":    "b-rejected",
+    "Deferred":    "b-deferred",
+}
+
+# ── Module 2 — Verdict thresholds & display config ───────────────────────────
+VERDICT_CONFIG = {
+    "Feasible":     {"color": "#1D9E75", "bg": "#D1F5EA", "icon": "✅"},
+    "Conditional":  {"color": "#C07A10", "bg": "#FFF3CD", "icon": "⚠️"},
+    "Not Feasible": {"color": "#C0392B", "bg": "#FDE8E8", "icon": "❌"},
+}
+
+# Score → verdict mapping thresholds
+VERDICT_THRESHOLDS = {
+    "Feasible":    3.5,   # score >= 3.5
+    "Conditional": 2.5,   # score >= 2.5
+    # below 2.5 → Not Feasible
+}

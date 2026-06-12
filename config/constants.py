@@ -163,3 +163,33 @@ MODULES = [
     ("m3", "03", "Gain–Pain Analysis",     "Locked"),
     ("m4", "04", "Governance Dashboard",   "Locked"),
 ]
+
+
+# ── Module 3 — Gain Pain Analysis ─────────────────────────────────────────────
+GAIN_DIMENSIONS = [
+    {"id": "business_value_gain",  "label": "Business Value Gain",  "icon": "💰", "nist": "MAP 4.1"},
+    {"id": "strategic_alignment",  "label": "Strategic Alignment",  "icon": "🎯", "nist": "GOVERN 1.1"},
+    {"id": "efficiency_gain",      "label": "Efficiency Gain",      "icon": "⚡", "nist": "MAP 4.2"},
+    {"id": "innovation_potential", "label": "Innovation Potential", "icon": "🚀", "nist": "MAP 4.3"},
+]
+
+PAIN_DIMENSIONS = [
+    {"id": "implementation_cost",  "label": "Implementation Cost",  "icon": "💸", "nist": "MAP 5.2"},
+    {"id": "operational_risk",     "label": "Operational Risk",     "icon": "⚠️", "nist": "MAP 2.3"},
+    {"id": "adoption_resistance",  "label": "Adoption Resistance",  "icon": "🔄", "nist": "GOVERN 4.1"},
+    {"id": "compliance_burden",    "label": "Compliance Burden",    "icon": "⚖️", "nist": "MAP 1.1"},
+]
+
+PRIORITY_BANDS = {
+    "High Priority":   {"color": "#1D9E75", "bg": "#D1F5EA", "icon": "🟢"},
+    "Medium Priority": {"color": "#C07A10", "bg": "#FFF3CD", "icon": "🟡"},
+    "Low Priority":    {"color": "#C0392B", "bg": "#FDE8E8", "icon": "🔴"},
+}
+
+# Unlock Module 3
+MODULES = [
+    ("m1", "01", "Problem Definition",    "Active"),
+    ("m2", "02", "Feasibility Assessment", "Active"),
+    ("m3", "03", "Gain–Pain Analysis",     "Active"),
+    ("m4", "04", "Governance Dashboard",   "Locked"),
+]

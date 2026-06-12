@@ -1,0 +1,90 @@
+# config/dimensions.py
+# ─────────────────────────────────────────────────────────────────────────────
+# Module 2 — Assessment dimensions, stakeholder roles, and scoring questions.
+#
+# Each dimension maps to a stakeholder group and contains 5 yes/no-style
+# questions scored 1–5 (Strongly disagree → Strongly agree).
+#
+# To add a new dimension:
+#   1. Add a dict entry here following the same schema.
+#   2. Add the corresponding column to the DB table in core/database.py.
+#   3. Update the AI scoring prompt in config/prompts.py.
+# ─────────────────────────────────────────────────────────────────────────────
+
+ASSESSMENT_DIMENSIONS = [
+    {
+        "id":    "ai_suitability",
+        "label": "AI Suitability",
+        "icon":  "🤖",
+        "role":  "Process Owner",
+        "color": "#6C63FF",
+        "desc":  "Evaluates whether the problem is genuinely suitable for AI vs rules/traditional approaches.",
+        "questions": [
+            ("pattern_complexity", "The problem involves complex patterns that are difficult to express as simple rules"),
+            ("data_driven",        "The problem is inherently data-driven and has variability that rules cannot fully capture"),
+            ("ai_over_rules",      "AI would provide measurable advantages over rule-based or traditional ML approaches"),
+            ("repeatability",      "The problem occurs frequently enough to justify AI development and maintenance cost"),
+            ("outcome_clarity",    "The desired outcome/output of the AI system is clearly definable and measurable"),
+        ],
+    },
+    {
+        "id":    "economic_viability",
+        "label": "Economic Viability",
+        "icon":  "💰",
+        "role":  "Finance / Business Lead",
+        "color": "#0F6E56",
+        "desc":  "Assesses ROI potential, cost of implementation, and scale benefits.",
+        "questions": [
+            ("roi_potential",       "The projected ROI or cost savings justifies the investment in AI development"),
+            ("scale_benefit",       "The solution will deliver increasing returns as it scales across the organisation"),
+            ("budget_availability", "Adequate budget is available or can be allocated for this initiative"),
+            ("time_to_value",       "The time to realise business value is acceptable given the investment required"),
+            ("competitive_edge",    "Implementing this AI solution provides a meaningful competitive or operational advantage"),
+        ],
+    },
+    {
+        "id":    "data_readiness",
+        "label": "Data & Technology Readiness",
+        "icon":  "🗄️",
+        "role":  "Data / Technology Team",
+        "color": "#C07A10",
+        "desc":  "Checks data availability, quality, infrastructure, and technology stack readiness.",
+        "questions": [
+            ("data_availability", "Sufficient historical data exists or can be collected to train and validate the AI model"),
+            ("data_quality",      "The available data is of acceptable quality (accurate, complete, consistent)"),
+            ("infrastructure",    "The technology infrastructure required to deploy and run this AI solution is in place"),
+            ("integration_ease",  "The AI solution can be integrated into existing systems and workflows without major re-engineering"),
+            ("data_governance",   "Data privacy, security, and governance requirements can be met for this use case"),
+        ],
+    },
+    {
+        "id":    "workflow_maturity",
+        "label": "Workflow Maturity",
+        "icon":  "⚙️",
+        "role":  "Operations / Process Owner",
+        "color": "#8B2FC9",
+        "desc":  "Evaluates how well-defined and stable the current process is for AI augmentation.",
+        "questions": [
+            ("process_defined",    "The current process/workflow is well-documented and clearly defined"),
+            ("process_stable",     "The process is stable and not undergoing major changes that would affect AI training"),
+            ("exception_handling", "Edge cases and exceptions in the process are understood and manageable"),
+            ("kpi_defined",        "Clear KPIs exist to measure success and monitor AI performance post-deployment"),
+            ("ownership_clear",    "Process ownership and accountability for the AI-augmented workflow is clearly assigned"),
+        ],
+    },
+    {
+        "id":    "change_management",
+        "label": "Change Management",
+        "icon":  "👥",
+        "role":  "HR / Change Management",
+        "color": "#C0392B",
+        "desc":  "Assesses organisational readiness, adoption risk, and people-related challenges.",
+        "questions": [
+            ("leadership_support",   "Senior leadership actively supports and champions this AI initiative"),
+            ("user_acceptance",      "End users are likely to accept and trust AI-assisted decision-making in this area"),
+            ("training_feasibility", "Training and upskilling programs for impacted staff are feasible within the timeline"),
+            ("resistance_risk",      "The risk of significant employee resistance or pushback is low and manageable"),
+            ("culture_readiness",    "The organisational culture is ready to embrace AI-augmented processes"),
+        ],
+    },
+]
