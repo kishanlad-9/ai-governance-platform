@@ -36,6 +36,13 @@ PREFERRED_MODELS = {
         "claude-3-opus-20240229",
         "claude-3-sonnet-20240229",
     ],
+    "groq": [
+        "llama-3.3-70b-versatile",
+        "llama-3.1-70b-versatile",
+        "llama3-70b-8192",
+        "mixtral-8x7b-32768",
+        "gemma2-9b-it",
+    ],
 }
 
 
@@ -67,6 +74,8 @@ def detect_provider(api_key: str) -> str:
         return "gemini"
     if key.startswith("sk-ant-"):
         return "anthropic"
+    if key.startswith("gsk_"):
+        return "groq"
     if key.startswith("sk-") and not key.startswith("sk-ant-"):
         return "openai"
     return "unknown"
@@ -90,6 +99,8 @@ def resolve_model(api_key: str) -> tuple[str, str]:
         result = _resolve_openai(api_key)
     elif provider == "anthropic":
         result = _resolve_anthropic(api_key)
+    elif provider == "groq":
+        result = _resolve_groq(api_key)
     else:
         result = ("unknown", "")
 
@@ -157,6 +168,20 @@ def _resolve_anthropic(api_key: str) -> tuple[str, str]:
 # UNIFIED AI CALL
 # ══════════════════════════════════════════════════════════════════════════════
 
+def _resolve_groq(api_key: str) -> tuple[str, str]:
+    """List available Groq models and pick best preferred one."""
+    try:
+        from groq import Groq
+        client = Groq(api_key=api_key)
+        available = [m.id for m in client.models.list().data]
+        for preferred in PREFERRED_MODELS["groq"]:
+            if preferred in available:
+                return ("groq", preferred)
+        return ("groq", available[0] if available else PREFERRED_MODELS["groq"][0])
+    except Exception:
+        return ("groq", PREFERRED_MODELS["groq"][0])
+
+
 def call_ai(prompt: str, system: str = "", api_key: str = None) -> str:
     """
     Single unified AI call — works with Gemini, OpenAI, or Anthropic.
@@ -176,8 +201,10 @@ def call_ai(prompt: str, system: str = "", api_key: str = None) -> str:
         return _call_openai(api_key, model, system, prompt)
     elif provider == "anthropic":
         return _call_anthropic(api_key, model, system, prompt)
+    elif provider == "groq":
+        return _call_groq(api_key, model, system, prompt)
     else:
-        st.error("Could not detect provider from API key. Ensure it starts with AIza (Gemini), sk-ant- (Anthropic), or sk- (OpenAI).")
+        st.error("Could not detect provider. Key must start with: AIza (Gemini), sk-ant- (Anthropic), sk- (OpenAI), gsk_ (Groq).")
         st.stop()
 
 
@@ -210,6 +237,17 @@ def _call_anthropic(api_key, model, system, prompt) -> str:
     return client.messages.create(**kwargs).content[0].text
 
 
+def _call_groq(api_key, model, system, prompt) -> str:
+    from groq import Groq
+    client   = Groq(api_key=api_key)
+    messages = []
+    if system:
+        messages.append({"role": "system", "content": system})
+    messages.append({"role": "user", "content": prompt})
+    resp = client.chat.completions.create(model=model, messages=messages)
+    return resp.choices[0].message.content
+
+
 def call_ai_chat(messages: list, system: str, api_key: str = None) -> str:
     """
     Multi-turn chat call — used by Module 1 conversation.
@@ -229,6 +267,8 @@ def call_ai_chat(messages: list, system: str, api_key: str = None) -> str:
         return _chat_openai(api_key, model, system, messages)
     elif provider == "anthropic":
         return _chat_anthropic(api_key, model, system, messages)
+    elif provider == "groq":
+        return _chat_groq(api_key, model, system, messages)
     else:
         st.error("Could not detect provider. Check your API key.")
         st.stop()
@@ -262,6 +302,16 @@ def _chat_anthropic(api_key, model, system, messages) -> str:
     if system:
         kwargs["system"] = system
     return client.messages.create(**kwargs).content[0].text
+
+
+def _chat_groq(api_key, model, system, messages) -> str:
+    from groq import Groq
+    client = Groq(api_key=api_key)
+    msgs   = [{"role": "system", "content": system}] if system else []
+    for msg in messages:
+        msgs.append({"role": msg["role"], "content": msg["content"]})
+    resp = client.chat.completions.create(model=model, messages=msgs)
+    return resp.choices[0].message.content
 
 
 # ══════════════════════════════════════════════════════════════════════════════
