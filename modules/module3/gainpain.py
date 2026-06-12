@@ -152,6 +152,13 @@ def _step_analyse():
 
     st.markdown("<div style='height:1rem'></div>", unsafe_allow_html=True)
 
+    if not assessment:
+        st.error("No feasibility assessment found for this problem. Complete Module 2 first.")
+        if st.button("← Back"):
+            st.session_state.m3_step = "pick"
+            st.rerun()
+        return
+
     with st.spinner("AI is running gain-pain analysis…"):
         result = _call_m3_ai(problem, assessment)
 
@@ -424,14 +431,14 @@ PROBLEM STATEMENT (Module 1):
 - Success criteria: {problem.get('success_criteria','')}
 
 FEASIBILITY ASSESSMENT (Module 2):
-- Overall score: {assessment.get('overall_score',0):.2f}/5
+- Overall score: {float(assessment.get('overall_score') or 0):.2f}/5
 - Verdict: {assessment.get('verdict','—')}
-- AI Suitability: {assessment.get('ai_suitability_score',0):.1f}
-- Economic Viability: {assessment.get('economic_viability_score',0):.1f}
-- Data Readiness: {assessment.get('data_readiness_score',0):.1f}
-- Workflow Maturity: {assessment.get('workflow_maturity_score',0):.1f}
-- Change Management: {assessment.get('change_management_score',0):.1f}
-- Risk & Compliance: {assessment.get('risk_compliance_score',0):.1f}
+- AI Suitability: {float(assessment.get('ai_suitability_score') or 0):.1f}
+- Economic Viability: {float(assessment.get('economic_viability_score') or 0):.1f}
+- Data Readiness: {float(assessment.get('data_readiness_score') or 0):.1f}
+- Workflow Maturity: {float(assessment.get('workflow_maturity_score') or 0):.1f}
+- Change Management: {float(assessment.get('change_management_score') or 0):.1f}
+- Risk & Compliance: {float(assessment.get('risk_compliance_score') or 0):.1f}
 - Hard gate triggered: {bool(assessment.get('hard_gate_triggered',0))}
 
 Apply the NIST priority score formula and return ONLY the JSON object."""
